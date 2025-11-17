@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Catch the Scorpio</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #111;
+        font-family: Arial, sans-serif;
+        color: white;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    /* TOP MENU BAR */
+    .menu {
+        width: 100%;
+        background: #222;
+        padding: 10px 0;
+        display: flex;
+        justify-content: space-around;
+        font-size: 16px;
+        border-bottom: 2px solid #444;
+    }
+
+    .menu button {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 16px;
+        padding: 5px 12px;
+    }
+
+    .menu button:hover {
+        color: #ff8a00;
+    }
+
+    /* GAME AREA – responsive for iPhone */
+    #game-container {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    #gameCanvas {
+        background: #333;
+        width: 95vw;
+        height: auto;
+        max-height: 60vh;
+        border: 4px solid #555;
+        border-radius: 10px;
+        touch-action: none;
+    }
+
+    /* PLAYER SELECTOR – becomes bottom drawer on iPhone */
+    #player-select {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        background: #222;
+        padding: 12px 0;
+        border-top: 2px solid #444;
+    }
+
+    .player-choice {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 2px solid white;
+    }
+
+    @media (min-width: 700px) {
+        /* Desktop mode */
+        body {
+            flex-direction: row;
+        }
+
+        #game-container {
+            flex: 3;
+        }
+
+        #player-select {
+            width: 200px;
+            flex-direction: column;
+            gap: 16px;
+            border-top: none;
+            border-left: 2px solid #444;
+            height: 100vh;
+            justify-content: start;
+            padding-top: 50px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<!-- MENU BAR -->
+<div class="menu">
+    <button>About</button>
+    <button>Location</button>
+    <button>Instructions</button>
+    <button>RSVP</button>
+</div>
+
+<!-- GAME AREA -->
+<div id="game-container">
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+</div>
+
+<!-- COLOR SELECTOR -->
+<div id="player-select">
+    <div class="player-choice" style="background:red;"></div>
+    <div class="player-choice" style="background:blue;"></div>
+    <div class="player-choice" style="background:green;"></div>
+    <div class="player-choice" style="background:yellow;"></div>
+    <div class="player-choice" style="background:purple;"></div>
+    <div class="player-choice" style="background:orange;"></div>
+    <div class="player-choice" style="background:pink;"></div>
+    <div class="player-choice" style="background:cyan;"></div>
+</div>
+
+<script src="game.js"></script>
+
+<script>
+/* ------ OPTIONAL TOUCH CONTROL LOGIC ------ */
+
+const canvas = document.getElementById("gameCanvas");
+let lastTap = 0;
+
+canvas.addEventListener("touchstart", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+
+    // Tap position
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+
+    // Send to your game movement logic
+    if (window.playerMoveTo) {
+        playerMoveTo(x, y);
+    }
+
+    // Double tap detection
+    const now = Date.now();
+    if (now - lastTap < 300) {
+        if (window.playerDash) {
+            playerDash();
+        }
+    }
+    lastTap = now;
+});
+</script>
+
+</body>
+</html>

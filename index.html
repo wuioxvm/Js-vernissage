@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Catch the Scorpio</title>
+  <style>
+    body {
+      background: url("Background.png") no-repeat center center fixed;
+      background-size: cover;
+      margin:0;
+      display:flex;
+      color:#0eff42;
+      overflow:hidden;
+      font-family: "TamaConnectType", sans-serif;
+    }
+
+    /* Sidebar */
+    #sidebar {
+      color:#0eff42;
+      width:180px;
+      position:fixed;
+      top:200px;
+      left:50px;
+      height:100vh;
+      background: transparent;
+      padding:20px;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+      z-index:1000;
+    }
+
+    #sidebar h3 {
+      margin:0 0 8px 0;
+      font-size:16px;
+      position:sticky;
+      top:50px;
+      background:transparent;
+      z-index:1100;
+    }
+
+    /* Scrollable player list (only this scrolls, not the title) */
+    #playerList {
+      display:flex;
+      top:50px;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:50px;
+      max-height: calc(80px * 6 + 50px); /* ~6 players visible */
+      overflow-y:auto;
+      scroll-behavior:smooth;
+    }
+
+    /* Hide scrollbar visually */
+    #playerList::-webkit-scrollbar {
+      width:0;
+      background:transparent;
+    }
+    #playerList {
+      scrollbar-width:none; /* Firefox */
+    }
+
+    .pOption {
+      width:80px;   /* bigger sidebar thumbnails */
+      height:80px;
+      cursor:pointer;
+      border-radius:6px;
+      object-fit:contain;       /* show whole PNG, no cropping */
+      background:#00000055;     /* subtle frame */
+      padding:4px;
+      transition:0.2s;
+    }
+
+    .pOption.selected {
+      outline:4px solid #00eaff;
+      box-shadow:0 0 12px #00eaff;
+      border-radius:8px;
+      transform:scale(1.1);
+    }
+
+    /* Main area (to the right of sidebar) */
+    #main {
+      flex:1;
+      margin-left:180px; /* match sidebar width */
+      display:flex;
+      flex-direction:column;
+      align-items:stretch;
+    }
+
+    /* Menu bar */
+    nav {
+      font-family: "TamaConnectType", sans-serif;
+     width:100%;
+      background: transparent;
+      color:white;
+      padding:10px 0;
+      display:flex;
+      justify-content:center;
+      gap:20px;
+      position:fixed;
+      top:20px;
+      left:180px;   /* start after sidebar */
+      right:0;
+      font-size:16px;
+      z-index:900;
+    }
+
+    nav button {
+      background:#ff4444;
+      border:none;
+      padding:8px 16px;
+      border-radius:6px;
+      font-size:14px;
+      color:white;
+      cursor:pointer;
+            font-family: "TamaConnectType", sans-serif;
+
+    }
+
+    #rsvpBtn[disabled] {
+      opacity:0.4;
+      cursor:not-allowed;
+    }
+
+    #gameWrap {
+      flex:1;
+      display:flex;
+      align-items:stretch;
+      justify-content:center;
+      padding-top:50px; /* space for nav */
+    }
+
+    canvas {
+      background: transparent;
+      border:none;
+      display:block;
+    }
+
+    /* Popup */
+    #popup {
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      background:rgba(0,0,0,0.85);
+      padding:24px;
+      border-radius:12px;
+      width:300px;
+      text-align:center;
+      z-index:2000;
+      display:none;
+    }
+
+    #popupText {
+      margin-bottom:16px;
+      white-space:pre-line;
+    }
+
+    #popup button {
+      padding:6px 14px;
+      border:none;
+      border-radius:6px;
+      background:#ff4444;
+      color:white;
+      cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar with player images -->
+  <div id="sidebar">
+    <h3>Players</h3>
+    <div id="playerList">
+      <img class="pOption" src="kiah.png" />
+      <img class="pOption" src="Claire.png" />
+      <img class="pOption" src="Taylor.png" />
+      <img class="pOption" src="Elena.png" />
+      <img class="pOption" src="Mieke.png" />
+      <img class="pOption" src="Ryan.png" />
+      <img class="pOption" src="Isaac.png" />
+      <img class="pOption" src="Lauren.png" />
+      <img class="pOption" src="Quartz.png" />
+      <img class="pOption" src="Van.png" />
+      <img class="pOption" src="Em.png" />
+      <img class="pOption" src="Devon.png" />
+      <img class="pOption" src="Kevin.png" />
+      <img class="pOption" src="Negar.png" />
+      <img class="pOption" src="Emmet.png" />
+      <img class="pOption" src="Charisma.png" />
+      <img class="pOption" src="Jane.png" />
+      <img class="pOption" src="Ramina.png" />
+      <img class="pOption" src="Sky.png" />
+      <img class="pOption" src="ryme.png" />
+    </div>
+  </div>
+
+  <!-- Main area -->
+  <div id="main">
+    <nav>
+      <button id="aboutBtn">About</button>
+      <button id="locationBtn">Location</button>
+      <button id="instructionsBtn">Instructions</button>
+      <button id="rsvpBtn" disabled>RSVP</button>
+    </nav>
+
+    <div id="gameWrap">
+      <canvas id="game"></canvas>
+    </div>
+  </div>
+
+  <!-- Popup -->
+  <div id="popup">
+    <p id="popupText"></p>
+    <button id="popupClose">Close</button>
+  </div>
+
+<script>
+  const canvas = document.getElementById("game");
+  const ctx = canvas.getContext("2d");
+
+  const sidebarWidth = 180;
+  let ROOM_WIDTH = 0;
+  let ROOM_HEIGHT = 0;
+
+  function resizeCanvas() {
+    ROOM_WIDTH = window.innerWidth - sidebarWidth;
+    ROOM_HEIGHT = window.innerHeight;
+    canvas.width = ROOM_WIDTH;
+    canvas.height = ROOM_HEIGHT;
+  }
+
+  window.addEventListener("resize", resizeCanvas);
+  resizeCanvas();
+
+  const PLAYER_W = 120; // in-game player size
+  const PLAYER_H = 120;
+  const HEART_SIZE = 40;
+  const SCORPION_SIZE = 70;
+
+  let player = {
+    x: ROOM_WIDTH/2 - PLAYER_W/2,
+    y: ROOM_HEIGHT/2 - PLAYER_H/2,
+    speed: 4,
+    img: null,
+    width: PLAYER_W,
+    height: PLAYER_H,
+    pulse: 0,
+    name: ""
+  };
+
+  let playerSelected = false;
+  let heartCollected = false;
+  let heartWinner = null;
+  let keys = {};
+
+  document.addEventListener("keydown", e => keys[e.key] = true);
+  document.addEventListener("keyup", e => keys[e.key] = false);
+
+  // Heart
+  let heart;
+  const heartImg = new Image();
+  heartImg.src = "heart.png";
+
+  function randomHeart() {
+    return {
+      x: Math.random() * (ROOM_WIDTH - HEART_SIZE),
+      y: Math.random() * (ROOM_HEIGHT - HEART_SIZE)
+    };
+  }
+
+  // Scorpions (6 of them)
+  const scorpionImg = new Image();
+  scorpionImg.src = "image.png";
+
+  let scorpions = [];
+
+  function spawnScorpions() {
+    scorpions = [];
+    const positions = [
+      [0.1, 0.1],
+      [0.5, 0.1],
+      [0.9, 0.1],
+      [0.1, 0.9],
+      [0.5, 0.9],
+      [0.9, 0.9],
+    ];
+    for (let i = 0; i < 6; i++) {
+      const p = positions[i];
+      scorpions.push({
+        x: p[0] * ROOM_WIDTH,
+        y: p[1] * ROOM_HEIGHT,
+        wanderTime: 0,
+        wanderVX: 0,
+        wanderVY: 0
+      });
+    }
+  }
+
+  function initGame() {
+    resizeCanvas();
+    player.x = ROOM_WIDTH/2 - PLAYER_W/2;
+    player.y = ROOM_HEIGHT/2 - PLAYER_H/2;
+    heart = randomHeart();
+    spawnScorpions();
+  }
+
+  initGame();
+
+  function movePlayer() {
+    if (!playerSelected) return;
+
+    if (keys["ArrowUp"] || keys["w"]) player.y -= player.speed;
+    if (keys["ArrowDown"] || keys["s"]) player.y += player.speed;
+    if (keys["ArrowLeft"] || keys["a"]) player.x -= player.speed;
+    if (keys["ArrowRight"] || keys["d"]) player.x += player.speed;
+
+    player.x = Math.max(0, Math.min(ROOM_WIDTH - player.width, player.x));
+    player.y = Math.max(0, Math.min(ROOM_HEIGHT - player.height, player.y));
+  }
+
+  function doWander(s) {
+    if (s.wanderTime <= 0) {
+      s.wanderTime = 60 + Math.random() * 60;
+      const a = Math.random() * Math.PI * 2;
+      s.wanderVX = Math.cos(a) * 1.3;
+      s.wanderVY = Math.sin(a) * 1.3;
+    }
+    s.wanderTime--;
+    s.x += s.wanderVX;
+    s.y += s.wanderVY;
+    clampScorpion(s);
+  }
+
+  function clampScorpion(s) {
+    s.x = Math.max(0, Math.min(ROOM_WIDTH - SCORPION_SIZE, s.x));
+    s.y = Math.max(0, Math.min(ROOM_HEIGHT - SCORPION_SIZE, s.y));
+  }
+
+  function moveScorpions() {
+    scorpions.forEach(s => {
+      if (!playerSelected) {
+        doWander(s);
+        return;
+      }
+
+      if (heartCollected) {
+        // After heart collected, just wander
+        doWander(s);
+        return;
+      }
+
+      const playerCenterX = player.x + player.width / 2;
+      const playerCenterY = player.y + player.height / 2;
+      const heartCenterX = heart.x + HEART_SIZE / 2;
+      const heartCenterY = heart.y + HEART_SIZE / 2;
+
+      const dxh = playerCenterX - heartCenterX;
+      const dyh = playerCenterY - heartCenterY;
+      const distToHeart = Math.hypot(dxh, dyh);
+
+      let aggression = Math.max(0, 1 - distToHeart / 300);
+
+      if (aggression > 0.3) {
+        // Chase player
+        const sx = s.x + SCORPION_SIZE / 2;
+        const sy = s.y + SCORPION_SIZE / 2;
+        const dx = playerCenterX - sx;
+        const dy = playerCenterY - sy;
+        const d = Math.hypot(dx, dy) || 1;
+        const speed = 1.5 + aggression * 2;
+        s.x += (dx / d) * speed;
+        s.y += (dy / d) * speed;
+        clampScorpion(s);
+      } else {
+        doWander(s);
+      }
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, ROOM_WIDTH, ROOM_HEIGHT);
+
+    // Heart
+    if (!heartCollected) {
+      if (heartImg.complete && heartImg.naturalWidth > 0) {
+        ctx.drawImage(heartImg, heart.x, heart.y, HEART_SIZE, HEART_SIZE);
+      } else {
+        ctx.fillStyle = "red";
+        ctx.fillRect(heart.x, heart.y, HEART_SIZE, HEART_SIZE);
+      }
+    }
+
+    // Player
+    if (player.img) {
+      player.pulse += 0.07;
+      const scale = 1 + 0.05 * Math.sin(player.pulse);
+      const w = PLAYER_W * scale;
+      const h = PLAYER_H * scale;
+      ctx.drawImage(
+        player.img,
+        player.x - (w - PLAYER_W) / 2,
+        player.y - (h - PLAYER_H) / 2,
+        w, h
+      );
+    }
+
+    // Scorpions
+    scorpions.forEach(s => {
+      if (scorpionImg.complete && scorpionImg.naturalWidth > 0) {
+        ctx.drawImage(scorpionImg, s.x, s.y, SCORPION_SIZE, SCORPION_SIZE);
+      } else {
+        ctx.fillStyle = "#aa0000";
+        ctx.fillRect(s.x, s.y, SCORPION_SIZE, SCORPION_SIZE);
+      }
+    });
+  }
+
+  function rectOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
+    return !(ax + aw < bx || ax > bx + bw || ay + ah < by || ay > by + bh);
+  }
+
+  function checkCollisions() {
+    // Player vs heart
+    if (!heartCollected && player.img &&
+        rectOverlap(player.x, player.y, player.width, player.height,
+                    heart.x, heart.y, HEART_SIZE, HEART_SIZE)) {
+      heartCollected = true;
+      heartWinner = player.name;
+      enableRSVP();
+      openPopup("You collected the heart!\nRSVP is now unlocked for " + (player.name || "this player") + ".");
+    }
+
+    // Player vs any scorpion
+    if (player.img) {
+      for (const s of scorpions) {
+        if (rectOverlap(player.x, player.y, player.width, player.height,
+                        s.x, s.y, SCORPION_SIZE, SCORPION_SIZE)) {
+          alert("The scorpions stung you! Restarting...");
+          resetGame();
+          break;
+        }
+      }
+    }
+  }
+
+  function enableRSVP() {
+    const btn = document.getElementById("rsvpBtn");
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.style.cursor = "pointer";
+  }
+
+  function disableRSVP() {
+    const btn = document.getElementById("rsvpBtn");
+    btn.disabled = true;
+    btn.style.opacity = "0.4";
+    btn.style.cursor = "not-allowed";
+  }
+
+  function resetGame() {
+    heartCollected = false;
+    heartWinner = null;
+    heart = randomHeart();
+    spawnScorpions();
+    disableRSVP();
+    if (player.img) {
+      player.x = ROOM_WIDTH/2 - PLAYER_W/2;
+      player.y = ROOM_HEIGHT/2 - PLAYER_H/2;
+    }
+  }
+
+  // Player selection
+  const options = document.querySelectorAll(".pOption");
+  options.forEach(opt => {
+    opt.addEventListener("click", () => {
+      options.forEach(o => o.classList.remove("selected"));
+      opt.classList.add("selected");
+
+      const img = new Image();
+      img.src = opt.src;
+      player.img = img;
+      playerSelected = true;
+
+      const file = opt.src.split("/").pop();
+      player.name = file.split(".")[0] || "Player";
+
+      player.x = ROOM_WIDTH/2 - PLAYER_W/2;
+      player.y = ROOM_HEIGHT/2 - PLAYER_H/2;
+
+      // 2-second popup with player name
+      openPopup(player.name + " selected!");
+      setTimeout(() => {
+        closePopup();
+      }, 2000);
+
+      // If this player is NOT the one who collected the heart, lock RSVP
+      if (player.name !== heartWinner) {
+        disableRSVP();
+      } else if (heartCollected) {
+        enableRSVP();
+      }
+    });
+  });
+
+  // Popup logic
+  const popup = document.getElementById("popup");
+  const popupText = document.getElementById("popupText");
+  const popupClose = document.getElementById("popupClose");
+
+  function openPopup(message) {
+    popupText.textContent = message;
+    popup.style.display = "block";
+  }
+
+  function closePopup() {
+    popup.style.display = "none";
+  }
+
+  popupClose.addEventListener("click", closePopup);
+
+  document.getElementById("aboutBtn").addEventListener("click", () => {
+    openPopup("Catch the Scorpio is your Scorpio-season party game.\nChoose your avatar, dodge the scorpion, and steal the heart.");
+  });
+
+  document.getElementById("locationBtn").addEventListener("click", () => {
+    openPopup("Location: To be revealed in your official invite.\nStay tuned, Scorpio.");
+  });
+
+  document.getElementById("instructionsBtn").addEventListener("click", () => {
+    openPopup("Instructions:\n1. Click a player on the left.\n2. Use arrow keys or WASD to move.\n3. Avoid the scorpions.\n4. Collect the heart.\n5. Only the heart winner can RSVP.");
+  });
+
+  // RSVP logic – only the heart winner can use it
+  const rsvpBtn = document.getElementById("rsvpBtn");
+  rsvpBtn.addEventListener("click", () => {
+    if (!playerSelected) {
+      openPopup("Pick a player first!");
+      return;
+    }
+    if (!heartCollected || player.name !== heartWinner) {
+      openPopup("Only the player who collected the heart may RSVP.");
+      return;
+    }
+    console.log("RSVP pressed by player:", player.name || "Unknown");
+    openPopup((player.name || "Unknown") + 
+  ", this is your official invite to give a 1-minute presentation on J.\n\n" +
+  "This can be really simple or complex — you could share how we met, list things I like, " +
+  "or tell me things you think I'd like.\n\n" +
+  "PowerPoint is recommended, images are cool, props are encouraged.\n\n" +
+  "Looking forward to what you have to say xx"
+  + "J"
+    );
+  });
+
+  function loop() {
+    movePlayer();
+    moveScorpions();
+    draw();
+    checkCollisions();
+    requestAnimationFrame(loop);
+  }
+
+  loop();
+</script>
+
+</body>
+</html>
