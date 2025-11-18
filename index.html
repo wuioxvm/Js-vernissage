@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <title>J's 5 a 7</title>
   <style>
+
+    <audio id="bgm" src="glamorous.mp3" loop></audio>
+
     @font-face {
       font-family: "TamaConnectType";
       src: url("tamaconnecttype.woff2") format("woff2"),
@@ -389,6 +392,9 @@
   </div>
 
 <script>
+ 
+  
+  
   const playerList = document.getElementById("playerList");
   const scrollArrow = document.getElementById("scrollArrow");
 
@@ -406,6 +412,9 @@
   let ROOM_WIDTH = 0;
   let ROOM_HEIGHT = 0;
 
+  document.body.addEventListener("click", () => {
+  document.getElementById("bgm").play();
+}, { once: true });
   function resizeCanvas() {
     ROOM_WIDTH = window.innerWidth - sidebarWidth;
     ROOM_HEIGHT = window.innerHeight;
@@ -802,6 +811,7 @@
 
 </body>
 </html>
+
 
 
 
