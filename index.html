@@ -11,6 +11,24 @@
   font-weight: normal;
   font-style: normal;
   font-display: swap;
+    }
+
+   #scrollArrow {
+  position: fixed;
+  left: 170px; 
+  bottom: 400px;
+  transform: translateX(-50%);
+  font-size: 28px;
+  color: #0eff42;
+  opacity: 0.8;
+  animation: bounce 1s infinite ease-in-out;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
 }
     body {
       background: url("Background.png") no-repeat center center fixed;
@@ -50,14 +68,18 @@
     /* Scrollable player list (only this scrolls, not the title) */
     #playerList {
       display:flex;
-      top:50px;
       flex-direction:column;
       align-items:flex-start;
       gap:50px;
-      max-height: calc(80px * 6 + 50px); /* ~6 players visible */
+      max-height: calc(80px * 8 + 50px);
       overflow-y:auto;
+      -webkit-overflow-scrolling: touch;
       scroll-behavior:smooth;
+      padding-left: 10px;
+      position: relative;
+      z-index: 1;
     }
+    
 
     /* Hide scrollbar visually */
     #playerList::-webkit-scrollbar {
@@ -74,7 +96,7 @@
       cursor:pointer;
       border-radius:6px;
       object-fit:contain;       /* show whole PNG, no cropping */
-      background:#00000055;     /* subtle frame */
+      background:#ffffff55;     /* subtle frame */
       padding:4px;
       transition:0.2s;
     }
@@ -178,6 +200,8 @@
 
   <!-- Sidebar with player images -->
   <div id="sidebar">
+    <div id="scrollArrow">↓</div>
+
     <h3>Players</h3>
     <div id="playerList">
       <img class="pOption" src="kiah.png" />
@@ -192,7 +216,8 @@
       <img class="pOption" src="Van.png" />
       <img class="pOption" src="Em.png" />
       <img class="pOption" src="Devon.png" />
-      <img class="pOption" src="Kevin.png" />
+      <img class="pOption" src="Kevin.png"/>
+      <img class="pOption" src="Tim.png" />
       <img class="pOption" src="Negar.png" />
       <img class="pOption" src="Emmet.png" />
       <img class="pOption" src="Charisma.png" />
@@ -201,6 +226,7 @@
       <img class="pOption" src="Sky.png" />
       <img class="pOption" src="Ryme.png" />
     </div>
+
   </div>
 
   <!-- Main area -->
@@ -224,6 +250,16 @@
   </div>
 
 <script>
+  const playerList = document.getElementById("playerList");
+  const scrollArrow = document.getElementById("scrollArrow");
+
+  playerList.addEventListener("scroll", () => {
+    const atBottom =
+      playerList.scrollTop + playerList.clientHeight >= playerList.scrollHeight - 5;
+
+    scrollArrow.style.display = atBottom ? "none" : "block";
+  });
+
   const canvas = document.getElementById("game");
   const ctx = canvas.getContext("2d");
 
