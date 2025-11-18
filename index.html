@@ -1,52 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>
-  emailjs.init("buRmohqaBokcSOkF6");
-</script>
-
-<style>
-  /* Upload modal styling */
-  #uploadPopup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 420px;
-    background: rgba(0,0,0,0.90);
-    padding: 24px;
-    border-radius: 12px;
-    color: #0eff42;
-    display: none;
-    z-index: 5000;
-    font-family: "TamaConnectType", sans-serif;
-  }
-
-  #uploadPopup input,
-  #uploadPopup textarea {
-    width: 100%;
-    margin-bottom: 12px;
-    padding: 8px;
-    border-radius: 6px;
-    border: none;
-  }
-
-  #uploadPopup button {
-    background: #ff4444;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-  }
-</style>
-
 <head>
   <meta charset="UTF-8" />
   <title>J's 5 a 7</title>
-  <!-- EmailJS SDK -->
-  <script src="https://cdn.emailjs.com/sdk/3.11.0/email.min.js"></script>
-
   <style>
     @font-face {
       font-family: "TamaConnectType";
@@ -59,7 +15,7 @@
 
     #scrollArrow {
       position: fixed;
-      left: 170px; 
+      left: 170px;
       bottom: 400px;
       transform: translateX(-50%);
       font-size: 28px;
@@ -110,7 +66,7 @@
       z-index:1100;
     }
 
-    /* Scrollable player list (only this scrolls, not the title) */
+    /* Scrollable player list */
     #playerList {
       display:flex;
       flex-direction:column;
@@ -155,7 +111,7 @@
     /* Main area (to the right of sidebar) */
     #main {
       flex:1;
-      margin-left:180px; /* match sidebar width */
+      margin-left:180px;
       display:flex;
       flex-direction:column;
       align-items:stretch;
@@ -173,7 +129,7 @@
       gap:20px;
       position:fixed;
       top:20px;
-      left:180px;   /* start after sidebar */
+      left:180px;
       right:0;
       font-size:16px;
       z-index:900;
@@ -209,7 +165,7 @@
       display:block;
     }
 
-    /* Popup (text popup) */
+    /* Generic popup (About, Location, Instructions, RSVP text) */
     #popup {
       position:fixed;
       top:50%;
@@ -219,7 +175,7 @@
       padding:24px;
       border-radius:12px;
       width:800px;
-      max-width: 90vw;
+      max-width:90vw;
       text-align:center;
       z-index:2000;
       display:none;
@@ -240,7 +196,7 @@
     }
 
     /* Upload modal */
-    #uploadModal {
+    #uploadPopup {
       position:fixed;
       top:50%;
       left:50%;
@@ -249,30 +205,34 @@
       padding:24px;
       border-radius:12px;
       width:500px;
-      max-width: 90vw;
+      max-width:90vw;
       text-align:left;
       z-index:2100;
       display:none;
       color:#0eff42;
     }
 
-    #uploadModal h2 {
+    #uploadPopup h2 {
       margin-top:0;
-      margin-bottom:10px;
+      margin-bottom:12px;
       font-size:20px;
     }
 
-    #uploadModal label {
-      display:block;
-      margin-top:10px;
-      margin-bottom:4px;
-      font-size:14px;
+    #uploadForm {
+      display:flex;
+      flex-direction:column;
+      gap:10px;
     }
 
-    #uploadModal input,
-    #uploadModal textarea {
-      width:100%;
-      box-sizing:border-box;
+    #uploadForm label {
+      font-size:14px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+
+    #uploadForm input,
+    #uploadForm textarea {
       border-radius:6px;
       border:1px solid #0eff42;
       background:rgba(0,0,0,0.7);
@@ -282,32 +242,45 @@
       font-size:14px;
     }
 
-    #uploadModal textarea {
-      min-height:80px;
-      resize:vertical;
+    #uploadForm input::file-selector-button {
+      border:none;
+      border-radius:6px;
+      padding:4px 8px;
+      margin-right:8px;
+      background:#ff4444;
+      color:white;
+      cursor:pointer;
+      font-family:"TamaConnectType", sans-serif;
+      font-size:13px;
     }
 
-    #uploadModal .upload-buttons {
-      display:flex;
-      gap:10px;
-      margin-top:14px;
-      justify-content:flex-end;
-    }
-
-    #uploadModal button {
+    #uploadForm button[type="submit"] {
+      margin-top:8px;
+      align-self:flex-start;
       background:#ff4444;
       border:none;
-      padding:8px 14px;
+      padding:8px 16px;
       border-radius:6px;
       color:white;
       cursor:pointer;
       font-family:"TamaConnectType", sans-serif;
+      font-size:14px;
     }
 
-    #uploadModal small {
-      display:block;
-      margin-top:4px;
-      font-size:11px;
+    #uploadClose {
+      margin-top:10px;
+      background:transparent;
+      border:1px solid #ff4444;
+      padding:4px 10px;
+      border-radius:6px;
+      color:#ff4444;
+      cursor:pointer;
+      font-family:"TamaConnectType", sans-serif;
+      font-size:13px;
+    }
+
+    #uploadHint {
+      font-size:12px;
       opacity:0.8;
     }
   </style>
@@ -359,42 +332,63 @@
     </div>
   </div>
 
-  <!-- Text Popup -->
+  <!-- Text popup -->
   <div id="popup">
     <p id="popupText"></p>
     <button id="popupClose">Close</button>
   </div>
 
-  <!-- Upload Modal -->
-  <div id="uploadModal">
+  <!-- Upload popup (Formspree) -->
+  <div id="uploadPopup">
     <h2>Upload your presentation / files</h2>
-    <form id="uploadForm" enctype="multipart/form-data">
-      <label for="u_name">Your name *</label>
-      <input type="text" id="u_name" name="from_name" required />
+    <p id="uploadHint">
+      Files will be sent directly to J's email 
+    </p>
+    <form
+      id="uploadForm"
+      action="https://formspree.io/f/xvglowlo"
+      method="POST"
+      enctype="multipart/form-data"
+      target="_blank"
+    >
+      <label>
+        Your name
+        <input type="text" name="name" required />
+      </label>
 
-      <label for="u_email">Your email *</label>
-      <input type="email" id="u_email" name="reply_to" required />
+      <label>
+        Your email
+        <input type="email" name="email" required />
+      </label>
 
-      <label for="u_message">Message (optional)</label>
-      <textarea id="u_message" name="message"></textarea>
+      <label>
+        Message (optional)
+        <textarea
+          name="message"
+          rows="3"
+          placeholder="Optional note about your file, theme, or performance."
+        ></textarea>
+      </label>
 
-      <label for="u_files">Upload files</label>
-      <input type="file" id="u_files" name="files" multiple />
-      <small>You can upload images, slides, or any other files.</small>
+      <label>
+        Files (as many as you like)
+        <input type="file" name="files" multiple />
+      </label>
 
-      <div class="upload-buttons">
-        <button type="button" id="uploadCancel">Cancel</button>
-        <button type="submit" id="uploadSubmit">Send</button>
-      </div>
+      <!-- Optional: custom subject line for the email you receive -->
+      <input
+        type="hidden"
+        name="_subject"
+        value="New 5 à 7 upload from the game"
+      />
+
+      <button type="submit">Send to J</button>
     </form>
+
+    <button id="uploadClose">Close</button>
   </div>
 
 <script>
-  // ---------- EmailJS init ----------
-  (function() {
-    emailjs.init("buRmohqaBokcSOkF6"); // your public key
-  })();
-
   const playerList = document.getElementById("playerList");
   const scrollArrow = document.getElementById("scrollArrow");
 
@@ -422,7 +416,7 @@
   window.addEventListener("resize", resizeCanvas);
   resizeCanvas();
 
-  const PLAYER_W = 120; // in-game player size
+  const PLAYER_W = 120;
   const PLAYER_H = 120;
   const HEART_SIZE = 40;
   const SCORPION_SIZE = 70;
@@ -467,7 +461,7 @@
   });
 
   canvas.addEventListener("touchend", () => {
-    touchTarget = null; // stop movement when finger lifts
+    touchTarget = null;
   });
 
   // Heart
@@ -523,19 +517,19 @@
   function movePlayer() {
     if (!playerSelected) return;
 
-    // ----- TOUCH MOVEMENT -----
+    // Touch movement
     if (touchTarget) {
       const dx = touchTarget.x - (player.x + player.width / 2);
       const dy = touchTarget.y - (player.y + player.height / 2);
       const dist = Math.hypot(dx, dy);
 
-      if (dist > 5) { 
+      if (dist > 5) {
         player.x += (dx / dist) * player.speed;
         player.y += (dy / dist) * player.speed;
       }
     }
 
-    // ----- KEYBOARD MOVEMENT -----
+    // Keyboard movement
     if (keys["ArrowUp"] || keys["w"]) player.y -= player.speed;
     if (keys["ArrowDown"] || keys["s"]) player.y += player.speed;
     if (keys["ArrowLeft"] || keys["a"]) player.x -= player.speed;
@@ -544,7 +538,7 @@
     // Clamp to room
     player.x = Math.max(0, Math.min(ROOM_WIDTH - player.width, player.x));
     player.y = Math.max(0, Math.min(ROOM_HEIGHT - player.height, player.y));
-  } 
+  }
 
   function doWander(s) {
     if (s.wanderTime <= 0) {
@@ -572,7 +566,6 @@
       }
 
       if (heartCollected) {
-        // After heart collected, just wander
         doWander(s);
         return;
       }
@@ -589,7 +582,6 @@
       let aggression = Math.max(0, 1 - distToHeart / 300);
 
       if (aggression > 0.3) {
-        // Chase player
         const sx = s.x + SCORPION_SIZE / 2;
         const sy = s.y + SCORPION_SIZE / 2;
         const dx = playerCenterX - sx;
@@ -716,13 +708,11 @@
       player.x = ROOM_WIDTH/2 - PLAYER_W/2;
       player.y = ROOM_HEIGHT/2 - PLAYER_H/2;
 
-      // 2-second popup with player name
       openPopup(player.name + " selected!");
       setTimeout(() => {
         closePopup();
       }, 800);
 
-      // If this player is NOT the one who collected the heart, lock RSVP
       if (player.name !== heartWinner) {
         disableRSVP();
       } else if (heartCollected) {
@@ -752,14 +742,13 @@
   });
 
   document.getElementById("locationBtn").addEventListener("click", () => {
-    openPopup("Location: 2346 Charles St, Vancouver, BC V5L 2V5.\nStay tuned, J.");
+    openPopup("Location: 2346 Charles St\nVancouver, BC V5L 2V5.\nStay tuned, J.");
   });
 
   document.getElementById("instructionsBtn").addEventListener("click", () => {
     openPopup("Instructions:\n1. Click a player on the left.\n2. Use arrow keys or WASD to move.\n3. Avoid the scorpions.\n4. Collect the heart.\n5. Only the heart winner can RSVP.");
   });
 
-  // RSVP logic – only the heart winner can use it
   const rsvpBtn = document.getElementById("rsvpBtn");
   rsvpBtn.addEventListener("click", () => {
     if (!playerSelected) {
@@ -771,63 +760,32 @@
       return;
     }
     console.log("RSVP pressed by player:", player.name || "Unknown");
-    openPopup((player.name || "Unknown") + 
+    openPopup(
+      (player.name || "Unknown") +
       ", this is your official invite to give a 2-minute + presentation on me (J).\n\n" +
-      "This can be really simple or complex — idea templates are: tell me things you think I'd like, what you think about me, how we met, list things I like, etc.\n\n" +
-      "This is your chance to psychoanalyze me, therapize me, roast me, or the latter.\n\n" +
+      "This can be really simple or complex — idea templates are: tell me things you think I'd like, what you think about me, you could share how we met, list things I like, etc.\n\n" +
+      "This is your chance to psychoanalyze me, therapize me, roast me or the latter.\n\n" +
       "I will also accept performance, karaoke, and dance equivalencies.\n\n" +
       "I will really be content with any creative alternative.\n\n" +
       "If you don't want to do one of the above you can do a presentation on yourself, and if you don't want to do that then I'll do a presentation on you and you can take notes.\n\n" +
       "If you really don't want any of the above then you can be a note taker for the evening.\n\n" +
       "And... if everyone chooses to be a note taker for the evening then I'm going to play my Stats lectures and we can all take notes on that.\n\n" +
       "PowerPoint is recommended, images are cool, props are encouraged.\n\n" +
-      "Looking forward to what you have to say xx\n" +
-      "Love you all, J xx"
+      "Looking forward to what you have to say xx Love you all J xx"
     );
   });
 
-  // ---------- Upload modal + EmailJS ----------
+  // Upload popup logic
   const uploadBtn = document.getElementById("uploadBtn");
-  const uploadModal = document.getElementById("uploadModal");
-  const uploadCancel = document.getElementById("uploadCancel");
-  const uploadForm = document.getElementById("uploadForm");
-  const uploadSubmit = document.getElementById("uploadSubmit");
+  const uploadPopup = document.getElementById("uploadPopup");
+  const uploadClose = document.getElementById("uploadClose");
 
   uploadBtn.addEventListener("click", () => {
-    uploadModal.style.display = "block";
+    uploadPopup.style.display = "block";
   });
 
-  uploadCancel.addEventListener("click", () => {
-    uploadModal.style.display = "none";
-  });
-
-  // close upload modal if clicking outside
-  window.addEventListener("click", (e) => {
-    if (e.target === uploadModal) {
-      uploadModal.style.display = "none";
-    }
-  });
-
-  uploadForm.addEventListener("submit", function(e) {
-    e.preventDefault();
-    uploadSubmit.disabled = true;
-    uploadSubmit.textContent = "Sending...";
-
-    emailjs
-      .sendForm("service_m0hvufy", "template_0w9mbav", this)
-      .then(function() {
-        alert("Upload sent to J! 💌");
-        uploadForm.reset();
-        uploadModal.style.display = "none";
-        uploadSubmit.disabled = false;
-        uploadSubmit.textContent = "Send";
-      })
-      .catch(function(error) {
-        console.error("EmailJS error:", error);
-        alert("Something went wrong sending your upload. Try again?");
-        uploadSubmit.disabled = false;
-        uploadSubmit.textContent = "Send";
-      });
+  uploadClose.addEventListener("click", () => {
+    uploadPopup.style.display = "none";
   });
 
   function loop() {
