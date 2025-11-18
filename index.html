@@ -1,35 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  emailjs.init("buRmohqaBokcSOkF6");
+</script>
+
+<style>
+  /* Upload modal styling */
+  #uploadPopup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 420px;
+    background: rgba(0,0,0,0.90);
+    padding: 24px;
+    border-radius: 12px;
+    color: #0eff42;
+    display: none;
+    z-index: 5000;
+    font-family: "TamaConnectType", sans-serif;
+  }
+
+  #uploadPopup input,
+  #uploadPopup textarea {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+  }
+
+  #uploadPopup button {
+    background: #ff4444;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+  }
+</style>
+
 <head>
   <meta charset="UTF-8" />
   <title>J's 5 a 7</title>
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.emailjs.com/sdk/3.11.0/email.min.js"></script>
+
   <style>
     @font-face {
-  font-family: "TamaConnectType";
-  src: url("tamaconnecttype.woff2") format("woff2"),
-       url("tamaconnecttype.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+      font-family: "TamaConnectType";
+      src: url("tamaconnecttype.woff2") format("woff2"),
+           url("tamaconnecttype.woff") format("woff");
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
     }
 
-   #scrollArrow {
-  position: fixed;
-  left: 170px; 
-  bottom: 400px;
-  transform: translateX(-50%);
-  font-size: 28px;
-  color: #0eff42;
-  opacity: 0.8;
-  animation: bounce 1s infinite ease-in-out;
-  z-index: 9999;
-  pointer-events: none;
-}
+    #scrollArrow {
+      position: fixed;
+      left: 170px; 
+      bottom: 400px;
+      transform: translateX(-50%);
+      font-size: 28px;
+      color: #0eff42;
+      opacity: 0.8;
+      animation: bounce 1s infinite ease-in-out;
+      z-index: 9999;
+      pointer-events: none;
+    }
 
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
-}
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+
     body {
       background: url("Background.png") no-repeat center center fixed;
       background-size: cover;
@@ -79,7 +124,6 @@
       position: relative;
       z-index: 1;
     }
-    
 
     /* Hide scrollbar visually */
     #playerList::-webkit-scrollbar {
@@ -91,12 +135,12 @@
     }
 
     .pOption {
-      width:80px;   /* bigger sidebar thumbnails */
+      width:80px;
       height:80px;
       cursor:pointer;
       border-radius:6px;
-      object-fit:contain;       /* show whole PNG, no cropping */
-      background:#ffffff55;     /* subtle frame */
+      object-fit:contain;
+      background:#ffffff55;
       padding:4px;
       transition:0.2s;
     }
@@ -120,7 +164,7 @@
     /* Menu bar */
     nav {
       font-family: "TamaConnectType", sans-serif;
-     width:100%;
+      width:100%;
       background: transparent;
       color:white;
       padding:10px 0;
@@ -143,8 +187,7 @@
       font-size:14px;
       color:white;
       cursor:pointer;
-            font-family: "TamaConnectType", sans-serif;
-
+      font-family: "TamaConnectType", sans-serif;
     }
 
     #rsvpBtn[disabled] {
@@ -166,7 +209,7 @@
       display:block;
     }
 
-    /* Popup */
+    /* Popup (text popup) */
     #popup {
       position:fixed;
       top:50%;
@@ -176,6 +219,7 @@
       padding:24px;
       border-radius:12px;
       width:800px;
+      max-width: 90vw;
       text-align:center;
       z-index:2000;
       display:none;
@@ -193,6 +237,78 @@
       background:#ff4444;
       color:white;
       cursor:pointer;
+    }
+
+    /* Upload modal */
+    #uploadModal {
+      position:fixed;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      background:rgba(0,0,0,0.9);
+      padding:24px;
+      border-radius:12px;
+      width:500px;
+      max-width: 90vw;
+      text-align:left;
+      z-index:2100;
+      display:none;
+      color:#0eff42;
+    }
+
+    #uploadModal h2 {
+      margin-top:0;
+      margin-bottom:10px;
+      font-size:20px;
+    }
+
+    #uploadModal label {
+      display:block;
+      margin-top:10px;
+      margin-bottom:4px;
+      font-size:14px;
+    }
+
+    #uploadModal input,
+    #uploadModal textarea {
+      width:100%;
+      box-sizing:border-box;
+      border-radius:6px;
+      border:1px solid #0eff42;
+      background:rgba(0,0,0,0.7);
+      color:#0eff42;
+      padding:6px 8px;
+      font-family:"TamaConnectType", sans-serif;
+      font-size:14px;
+    }
+
+    #uploadModal textarea {
+      min-height:80px;
+      resize:vertical;
+    }
+
+    #uploadModal .upload-buttons {
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+      justify-content:flex-end;
+    }
+
+    #uploadModal button {
+      background:#ff4444;
+      border:none;
+      padding:8px 14px;
+      border-radius:6px;
+      color:white;
+      cursor:pointer;
+      font-family:"TamaConnectType", sans-serif;
+    }
+
+    #uploadModal small {
+      display:block;
+      margin-top:4px;
+      font-size:11px;
+      opacity:0.8;
     }
   </style>
 </head>
@@ -226,7 +342,6 @@
       <img class="pOption" src="Sky.png" />
       <img class="pOption" src="Ryme.png" />
     </div>
-
   </div>
 
   <!-- Main area -->
@@ -235,6 +350,7 @@
       <button id="aboutBtn">About</button>
       <button id="locationBtn">Location</button>
       <button id="instructionsBtn">Instructions</button>
+      <button id="uploadBtn">Upload</button>
       <button id="rsvpBtn" disabled>RSVP</button>
     </nav>
 
@@ -243,13 +359,42 @@
     </div>
   </div>
 
-  <!-- Popup -->
+  <!-- Text Popup -->
   <div id="popup">
     <p id="popupText"></p>
     <button id="popupClose">Close</button>
   </div>
 
+  <!-- Upload Modal -->
+  <div id="uploadModal">
+    <h2>Upload your presentation / files</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <label for="u_name">Your name *</label>
+      <input type="text" id="u_name" name="from_name" required />
+
+      <label for="u_email">Your email *</label>
+      <input type="email" id="u_email" name="reply_to" required />
+
+      <label for="u_message">Message (optional)</label>
+      <textarea id="u_message" name="message"></textarea>
+
+      <label for="u_files">Upload files</label>
+      <input type="file" id="u_files" name="files" multiple />
+      <small>You can upload images, slides, or any other files.</small>
+
+      <div class="upload-buttons">
+        <button type="button" id="uploadCancel">Cancel</button>
+        <button type="submit" id="uploadSubmit">Send</button>
+      </div>
+    </form>
+  </div>
+
 <script>
+  // ---------- EmailJS init ----------
+  (function() {
+    emailjs.init("buRmohqaBokcSOkF6"); // your public key
+  })();
+
   const playerList = document.getElementById("playerList");
   const scrollArrow = document.getElementById("scrollArrow");
 
@@ -300,29 +445,31 @@
 
   document.addEventListener("keydown", e => keys[e.key] = true);
   document.addEventListener("keyup", e => keys[e.key] = false);
- let touchTarget = null;
 
-canvas.addEventListener("touchstart", (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
-  touchTarget = {
-    x: touch.clientX - rect.left,
-    y: touch.clientY - rect.top
-  };
-});
+  let touchTarget = null;
 
-canvas.addEventListener("touchmove", (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
-  touchTarget = {
-    x: touch.clientX - rect.left,
-    y: touch.clientY - rect.top
-  };
-});
+  canvas.addEventListener("touchstart", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    touchTarget = {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+  });
 
-canvas.addEventListener("touchend", () => {
-  touchTarget = null; // stop movement when finger lifts
-});
+  canvas.addEventListener("touchmove", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    touchTarget = {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top
+    };
+  });
+
+  canvas.addEventListener("touchend", () => {
+    touchTarget = null; // stop movement when finger lifts
+  });
+
   // Heart
   let heart;
   const heartImg = new Image();
@@ -373,32 +520,31 @@ canvas.addEventListener("touchend", () => {
 
   initGame();
 
- function movePlayer() {
-  if (!playerSelected) return;
+  function movePlayer() {
+    if (!playerSelected) return;
 
-  // ----- TOUCH MOVEMENT -----
-  if (touchTarget) {
-    const dx = touchTarget.x - (player.x + player.width / 2);
-    const dy = touchTarget.y - (player.y + player.height / 2);
-    const dist = Math.hypot(dx, dy);
+    // ----- TOUCH MOVEMENT -----
+    if (touchTarget) {
+      const dx = touchTarget.x - (player.x + player.width / 2);
+      const dy = touchTarget.y - (player.y + player.height / 2);
+      const dist = Math.hypot(dx, dy);
 
-    if (dist > 5) { 
-      player.x += (dx / dist) * player.speed;
-      player.y += (dy / dist) * player.speed;
+      if (dist > 5) { 
+        player.x += (dx / dist) * player.speed;
+        player.y += (dy / dist) * player.speed;
+      }
     }
-  }
 
-  // ----- KEYBOARD MOVEMENT -----
-  if (keys["ArrowUp"] || keys["w"]) player.y -= player.speed;
-  if (keys["ArrowDown"] || keys["s"]) player.y += player.speed;
-  if (keys["ArrowLeft"] || keys["a"]) player.x -= player.speed;
-  if (keys["ArrowRight"] || keys["d"]) player.x += player.speed;
+    // ----- KEYBOARD MOVEMENT -----
+    if (keys["ArrowUp"] || keys["w"]) player.y -= player.speed;
+    if (keys["ArrowDown"] || keys["s"]) player.y += player.speed;
+    if (keys["ArrowLeft"] || keys["a"]) player.x -= player.speed;
+    if (keys["ArrowRight"] || keys["d"]) player.x += player.speed;
 
-  // Clamp to room
-  player.x = Math.max(0, Math.min(ROOM_WIDTH - player.width, player.x));
-  player.y = Math.max(0, Math.min(ROOM_HEIGHT - player.height, player.y));
-} 
- 
+    // Clamp to room
+    player.x = Math.max(0, Math.min(ROOM_WIDTH - player.width, player.x));
+    player.y = Math.max(0, Math.min(ROOM_HEIGHT - player.height, player.y));
+  } 
 
   function doWander(s) {
     if (s.wanderTime <= 0) {
@@ -606,7 +752,7 @@ canvas.addEventListener("touchend", () => {
   });
 
   document.getElementById("locationBtn").addEventListener("click", () => {
-    openPopup("Location: To be revealed in your official invite.\nStay tuned, Scorpio.");
+    openPopup("Location: 2346 Charles St, Vancouver, BC V5L 2V5.\nStay tuned, J.");
   });
 
   document.getElementById("instructionsBtn").addEventListener("click", () => {
@@ -627,17 +773,61 @@ canvas.addEventListener("touchend", () => {
     console.log("RSVP pressed by player:", player.name || "Unknown");
     openPopup((player.name || "Unknown") + 
       ", this is your official invite to give a 2-minute + presentation on me (J).\n\n" +
-      "This can be really simple or complex — idea tenmplates are : tell me things you think I'd like, what you think about me, you could share how we met, list things I like,etc " +
-      "This is your chance to psychoanalyze me, therpaize me, roast me or the ladder.\n\n" +
-      "I will also accept performance, kareoke, and dance equavalencies\n\n" +
-      "I will really be content with any creative alternative\n\n" +
-      "If you dont want to do one of the above you can do a presentation on yourself, and if you dont want to do that then I'll do a presentation on you and you can take notes\n\n" +
-      "If you really dont want any of the above then you can be a note take for the evening\n\n" +
-      "And... if everyone chooses to be a note taker for the evening then im going to play my Stats lectures and we can all take notes on that\n\n" +
+      "This can be really simple or complex — idea templates are: tell me things you think I'd like, what you think about me, how we met, list things I like, etc.\n\n" +
+      "This is your chance to psychoanalyze me, therapize me, roast me, or the latter.\n\n" +
+      "I will also accept performance, karaoke, and dance equivalencies.\n\n" +
+      "I will really be content with any creative alternative.\n\n" +
+      "If you don't want to do one of the above you can do a presentation on yourself, and if you don't want to do that then I'll do a presentation on you and you can take notes.\n\n" +
+      "If you really don't want any of the above then you can be a note taker for the evening.\n\n" +
+      "And... if everyone chooses to be a note taker for the evening then I'm going to play my Stats lectures and we can all take notes on that.\n\n" +
       "PowerPoint is recommended, images are cool, props are encouraged.\n\n" +
-      "Looking forward to what you have to say xx"
-      + "Love you all J xx"
+      "Looking forward to what you have to say xx\n" +
+      "Love you all, J xx"
     );
+  });
+
+  // ---------- Upload modal + EmailJS ----------
+  const uploadBtn = document.getElementById("uploadBtn");
+  const uploadModal = document.getElementById("uploadModal");
+  const uploadCancel = document.getElementById("uploadCancel");
+  const uploadForm = document.getElementById("uploadForm");
+  const uploadSubmit = document.getElementById("uploadSubmit");
+
+  uploadBtn.addEventListener("click", () => {
+    uploadModal.style.display = "block";
+  });
+
+  uploadCancel.addEventListener("click", () => {
+    uploadModal.style.display = "none";
+  });
+
+  // close upload modal if clicking outside
+  window.addEventListener("click", (e) => {
+    if (e.target === uploadModal) {
+      uploadModal.style.display = "none";
+    }
+  });
+
+  uploadForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+    uploadSubmit.disabled = true;
+    uploadSubmit.textContent = "Sending...";
+
+    emailjs
+      .sendForm("service_m0hvufy", "template_0w9mbav", this)
+      .then(function() {
+        alert("Upload sent to J! 💌");
+        uploadForm.reset();
+        uploadModal.style.display = "none";
+        uploadSubmit.disabled = false;
+        uploadSubmit.textContent = "Send";
+      })
+      .catch(function(error) {
+        console.error("EmailJS error:", error);
+        alert("Something went wrong sending your upload. Try again?");
+        uploadSubmit.disabled = false;
+        uploadSubmit.textContent = "Send";
+      });
   });
 
   function loop() {
