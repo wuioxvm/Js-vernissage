@@ -191,7 +191,7 @@
       <img class="pOption" src="Jane.png" />
       <img class="pOption" src="Ramina.png" />
       <img class="pOption" src="Sky.png" />
-      <img class="pOption" src="ryme.png" />
+      <img class="pOption" src="Ryme.png" />
     </div>
   </div>
 
@@ -260,7 +260,7 @@
   // Heart
   let heart;
   const heartImg = new Image();
-  heartImg.src = "heart.png";
+  heartImg.src = "Heart.png";
 
   function randomHeart() {
     return {
@@ -271,7 +271,7 @@
 
   // Scorpions (6 of them)
   const scorpionImg = new Image();
-  scorpionImg.src = "image.png";
+  scorpionImg.src = "Image.png";
 
   let scorpions = [];
 
@@ -492,7 +492,7 @@
       openPopup(player.name + " selected!");
       setTimeout(() => {
         closePopup();
-      }, 1000);
+      }, 2000);
 
       // If this player is NOT the one who collected the heart, lock RSVP
       if (player.name !== heartWinner) {
@@ -544,12 +544,17 @@
     }
     console.log("RSVP pressed by player:", player.name || "Unknown");
     openPopup((player.name || "Unknown") + 
-  ", this is your official invite to give a 1-minute presentation on J.\n\n" +
-  "This can be really simple or complex — you could share how we met, list things I like, " +
-  "or tell me things you think I'd like.\n\n" +
+  "Congradulations, this is your official invite to give a 2-minute + presentation on me (J).\n\n" +
+  "This can be really simple or complex — idea tenmplates are : tell me things you think I'd like, what you think about me, you could share how we met, list things I like,etc " +
+  "This is your chance to psychoanalyze me, therpaize me, roast me or the ladder.\n\n" +
+  "I will also accept performance, kareoke, and dance equavalencies\n\n" +
+  "I will really be content with any creative alternative\n\n" +
+  "If you dont want to do one of the above you can do a presentation on yourself, and if you dont want to do that then I'll do a presentation on you and you can take notes\n\n" +
+  "If you really dont want any of the above then you can be a note take for the evening\n\n" +
+  "And... if everyone chooses to be a note taker for the evening then im going to play my Stats lectures and we can all take notes on that\n\n" +
   "PowerPoint is recommended, images are cool, props are encouraged.\n\n" +
   "Looking forward to what you have to say xx"
-  + "J"
+  + "Love you all J xx"
     );
   });
 
@@ -566,4 +571,3 @@
 
 </body>
 </html>
-
