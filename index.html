@@ -2,8 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Catch the Scorpio</title>
+  <title>J's 5 a 7</title>
   <style>
+    @font-face {
+  font-family: "TamaConnectType";
+  src: url("tamaconnecttype.woff2") format("woff2"),
+       url("tamaconnecttype.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
     body {
       background: url("Background.png") no-repeat center center fixed;
       background-size: cover;
@@ -581,17 +589,18 @@ canvas.addEventListener("touchend", () => {
       return;
     }
     console.log("RSVP pressed by player:", player.name || "Unknown");
-      openPopup(
-      (player.name || "Unknown") + 
-      ", this is your official invite to give a 1-minute presentation on me (J).\n\n" +
-      "This can be really simple or complex. For example, you could:\n" +
-      "• Say how we met\n" +
-      "• List things I like\n" +
-      "• Tell me things you think I'd like\n" +
-      "• Make something chaotic, artistic, sweet, funny—whatever you want\n\n" +
+    openPopup((player.name || "Unknown") + 
+      ", this is your official invite to give a 2-minute + presentation on me (J).\n\n" +
+      "This can be really simple or complex — idea tenmplates are : tell me things you think I'd like, what you think about me, you could share how we met, list things I like,etc " +
+      "This is your chance to psychoanalyze me, therpaize me, roast me or the ladder.\n\n" +
+      "I will also accept performance, kareoke, and dance equavalencies\n\n" +
+      "I will really be content with any creative alternative\n\n" +
+      "If you dont want to do one of the above you can do a presentation on yourself, and if you dont want to do that then I'll do a presentation on you and you can take notes\n\n" +
+      "If you really dont want any of the above then you can be a note take for the evening\n\n" +
+      "And... if everyone chooses to be a note taker for the evening then im going to play my Stats lectures and we can all take notes on that\n\n" +
       "PowerPoint is recommended, images are cool, props are encouraged.\n\n" +
-      "Looking forward to listening to what you have to say xx\n\n" +
-      "Love you all, J xx"
+      "Looking forward to what you have to say xx"
+      + "Love you all J xx"
     );
   });
 
