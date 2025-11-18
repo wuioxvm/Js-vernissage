@@ -145,7 +145,7 @@
       background:rgba(0,0,0,0.85);
       padding:24px;
       border-radius:12px;
-      width:300px;
+      width:800px;
       text-align:center;
       z-index:2000;
       display:none;
@@ -256,7 +256,29 @@
 
   document.addEventListener("keydown", e => keys[e.key] = true);
   document.addEventListener("keyup", e => keys[e.key] = false);
+ let touchTarget = null;
 
+canvas.addEventListener("touchstart", (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  touchTarget = {
+    x: touch.clientX - rect.left,
+    y: touch.clientY - rect.top
+  };
+});
+
+canvas.addEventListener("touchmove", (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  touchTarget = {
+    x: touch.clientX - rect.left,
+    y: touch.clientY - rect.top
+  };
+});
+
+canvas.addEventListener("touchend", () => {
+  touchTarget = null; // stop movement when finger lifts
+});
   // Heart
   let heart;
   const heartImg = new Image();
@@ -307,17 +329,32 @@
 
   initGame();
 
-  function movePlayer() {
-    if (!playerSelected) return;
+ function movePlayer() {
+  if (!playerSelected) return;
 
-    if (keys["ArrowUp"] || keys["w"]) player.y -= player.speed;
-    if (keys["ArrowDown"] || keys["s"]) player.y += player.speed;
-    if (keys["ArrowLeft"] || keys["a"]) player.x -= player.speed;
-    if (keys["ArrowRight"] || keys["d"]) player.x += player.speed;
+  // ----- TOUCH MOVEMENT -----
+  if (touchTarget) {
+    const dx = touchTarget.x - (player.x + player.width / 2);
+    const dy = touchTarget.y - (player.y + player.height / 2);
+    const dist = Math.hypot(dx, dy);
 
-    player.x = Math.max(0, Math.min(ROOM_WIDTH - player.width, player.x));
-    player.y = Math.max(0, Math.min(ROOM_HEIGHT - player.height, player.y));
+    if (dist > 5) { 
+      player.x += (dx / dist) * player.speed;
+      player.y += (dy / dist) * player.speed;
+    }
   }
+
+  // ----- KEYBOARD MOVEMENT -----
+  if (keys["ArrowUp"] || keys["w"]) player.y -= player.speed;
+  if (keys["ArrowDown"] || keys["s"]) player.y += player.speed;
+  if (keys["ArrowLeft"] || keys["a"]) player.x -= player.speed;
+  if (keys["ArrowRight"] || keys["d"]) player.x += player.speed;
+
+  // Clamp to room
+  player.x = Math.max(0, Math.min(ROOM_WIDTH - player.width, player.x));
+  player.y = Math.max(0, Math.min(ROOM_HEIGHT - player.height, player.y));
+} 
+ 
 
   function doWander(s) {
     if (s.wanderTime <= 0) {
@@ -464,6 +501,7 @@
     heart = randomHeart();
     spawnScorpions();
     disableRSVP();
+    keys = {};
     if (player.img) {
       player.x = ROOM_WIDTH/2 - PLAYER_W/2;
       player.y = ROOM_HEIGHT/2 - PLAYER_H/2;
@@ -492,7 +530,7 @@
       openPopup(player.name + " selected!");
       setTimeout(() => {
         closePopup();
-      }, 2000);
+      }, 800);
 
       // If this player is NOT the one who collected the heart, lock RSVP
       if (player.name !== heartWinner) {
@@ -543,18 +581,17 @@
       return;
     }
     console.log("RSVP pressed by player:", player.name || "Unknown");
-    openPopup((player.name || "Unknown") + 
-  "Congradulations, this is your official invite to give a 2-minute + presentation on me (J).\n\n" +
-  "This can be really simple or complex — idea tenmplates are : tell me things you think I'd like, what you think about me, you could share how we met, list things I like,etc " +
-  "This is your chance to psychoanalyze me, therpaize me, roast me or the ladder.\n\n" +
-  "I will also accept performance, kareoke, and dance equavalencies\n\n" +
-  "I will really be content with any creative alternative\n\n" +
-  "If you dont want to do one of the above you can do a presentation on yourself, and if you dont want to do that then I'll do a presentation on you and you can take notes\n\n" +
-  "If you really dont want any of the above then you can be a note take for the evening\n\n" +
-  "And... if everyone chooses to be a note taker for the evening then im going to play my Stats lectures and we can all take notes on that\n\n" +
-  "PowerPoint is recommended, images are cool, props are encouraged.\n\n" +
-  "Looking forward to what you have to say xx"
-  + "Love you all J xx"
+      openPopup(
+      (player.name || "Unknown") + 
+      ", this is your official invite to give a 1-minute presentation on me (J).\n\n" +
+      "This can be really simple or complex. For example, you could:\n" +
+      "• Say how we met\n" +
+      "• List things I like\n" +
+      "• Tell me things you think I'd like\n" +
+      "• Make something chaotic, artistic, sweet, funny—whatever you want\n\n" +
+      "PowerPoint is recommended, images are cool, props are encouraged.\n\n" +
+      "Looking forward to listening to what you have to say xx\n\n" +
+      "Love you all, J xx"
     );
   });
 
