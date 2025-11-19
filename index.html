@@ -368,6 +368,13 @@
   <audio id="bgm" src="glamorous.mp3" controls loop style="position:fixed;bottom:20px;right:20px;z-index:3000;"></audio>
 
 <script>
+  // Attempt to auto-scroll the player list to trigger scroll event (may not count as user gesture in all browsers)
+  window.addEventListener('DOMContentLoaded', () => {
+    const playerList = document.getElementById('playerList');
+    if (playerList && playerList.scrollHeight > playerList.clientHeight) {
+      playerList.scrollTop = 1;
+    }
+  });
  
   
   
