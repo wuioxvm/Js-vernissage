@@ -4,20 +4,17 @@
   <meta charset="UTF-8" />
   <title>J's 5 a 7</title>
   <style>
-
-    
-    <link rel="image_src" href="Background.png" />
-  <meta name="Instagram:image" property="og:image" content="Background.png" />    
-    
+  <link rel="image_src" href="Background.png" />
+  <meta name="Instagram:image" property="og:image" content="Background.png" />
+  <style>
     @font-face {
-      font-family: "TamaConnectType";
-      src: url("tamaconnecttype.woff2") format("woff2"),
-           url("tamaconnecttype.woff") format("woff");
+      font-family: 'TamaConnectType';
+      src: url('tamaconnecttype.woff2') format('woff2'),
+           url('tamaconnecttype.woff') format('woff');
       font-weight: normal;
       font-style: normal;
       font-display: swap;
     }
-
     #scrollArrow {
       position: fixed;
       left: 170px;
@@ -30,12 +27,10 @@
       z-index: 9999;
       pointer-events: none;
     }
-
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(6px); }
     }
-
     body {
       background: url("Background.png") no-repeat center center fixed;
       background-size: cover;
@@ -45,7 +40,6 @@
       overflow:hidden;
       font-family: "TamaConnectType", sans-serif;
     }
-
     /* Sidebar */
     #sidebar {
       color:#0eff42;
@@ -61,7 +55,6 @@
       flex-direction:column;
       z-index:1000;
     }
-
     #sidebar h3 {
       margin:0 0 8px 0;
       font-size:16px;
@@ -70,7 +63,6 @@
       background:transparent;
       z-index:1100;
     }
-
     /* Scrollable player list */
     #playerList {
       display:flex;
@@ -85,7 +77,6 @@
       position: relative;
       z-index: 1;
     }
-
     /* Hide scrollbar visually */
     #playerList::-webkit-scrollbar {
       width:0;
@@ -94,7 +85,6 @@
     #playerList {
       scrollbar-width:none; /* Firefox */
     }
-
     .pOption {
       width:80px;
       height:80px;
@@ -105,14 +95,12 @@
       padding:4px;
       transition:0.2s;
     }
-
     .pOption.selected {
       outline:4px solid #00eaff;
       box-shadow:0 0 12px #00eaff;
       border-radius:8px;
       transform:scale(1.1);
     }
-
     /* Main area (to the right of sidebar) */
     #main {
       flex:1;
@@ -121,7 +109,6 @@
       flex-direction:column;
       align-items:stretch;
     }
-
     /* Menu bar */
     nav {
       font-family: "TamaConnectType", sans-serif;
@@ -139,7 +126,6 @@
       font-size:16px;
       z-index:900;
     }
-
     nav button {
       background:#ff4444;
       border:none;
@@ -150,12 +136,10 @@
       cursor:pointer;
       font-family: "TamaConnectType", sans-serif;
     }
-
     #rsvpBtn[disabled] {
       opacity:0.4;
       cursor:not-allowed;
     }
-
     #gameWrap {
       flex:1;
       display:flex;
@@ -163,13 +147,11 @@
       justify-content:center;
       padding-top:50px; /* space for nav */
     }
-
     canvas {
       background: transparent;
       border:none;
       display:block;
     }
-
     /* Generic popup (About, Location, Instructions, RSVP text) */
     #popup {
       position:fixed;
@@ -185,12 +167,10 @@
       z-index:2000;
       display:none;
     }
-
     #popupText {
       margin-bottom:16px;
       white-space:pre-line;
     }
-
     #popup button {
       padding:6px 14px;
       border:none;
@@ -199,7 +179,6 @@
       color:white;
       cursor:pointer;
     }
-
     /* Upload modal */
     #uploadPopup {
       position:fixed;
@@ -216,26 +195,22 @@
       display:none;
       color:#0eff42;
     }
-
     #uploadPopup h2 {
       margin-top:0;
       margin-bottom:12px;
       font-size:20px;
     }
-
     #uploadForm {
       display:flex;
       flex-direction:column;
       gap:10px;
     }
-
     #uploadForm label {
       font-size:14px;
       display:flex;
       flex-direction:column;
       gap:4px;
     }
-
     #uploadForm input,
     #uploadForm textarea {
       border-radius:6px;
@@ -246,7 +221,6 @@
       font-family:"TamaConnectType", sans-serif;
       font-size:14px;
     }
-
     #uploadForm input::file-selector-button {
       border:none;
       border-radius:6px;
@@ -258,7 +232,6 @@
       font-family:"TamaConnectType", sans-serif;
       font-size:13px;
     }
-
     #uploadForm button[type="submit"] {
       margin-top:8px;
       align-self:flex-start;
@@ -271,7 +244,6 @@
       font-family:"TamaConnectType", sans-serif;
       font-size:14px;
     }
-
     #uploadClose {
       margin-top:10px;
       background:transparent;
@@ -283,7 +255,6 @@
       font-family:"TamaConnectType", sans-serif;
       font-size:13px;
     }
-
     #uploadHint {
       font-size:12px;
       opacity:0.8;
