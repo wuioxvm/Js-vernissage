@@ -3,14 +3,72 @@
 <head>
   <meta charset="UTF-8" />
   <title>J's 5 a 7</title>
-  <style>
   <link rel="image_src" href="Background.png" />
   <meta name="Instagram:image" property="og:image" content="Background.png" />
   <style>
+                /* Click animation for Play Music button */
+                @keyframes clickPop {
+                  0% { transform: scale(1); }
+                  30% { transform: scale(1.15); }
+                  60% { transform: scale(0.95); }
+                  100% { transform: scale(1); }
+                }
+                #playMusicBtn.clicked {
+                  animation: clickPop 0.35s cubic-bezier(.68,-0.55,.27,1.55);
+                }
+            /* Blinking animation for Play Music button */
+            @keyframes blink {
+              0%, 100% { opacity: 1; }
+              50% { opacity: 0.3; }
+            }
+            #playMusicBtn {
+              background: #ff4444;
+              color: white;
+              border: none;
+              border-radius: 6px;
+              font-size: 14px;
+              font-family: "TamaConnectType", sans-serif;
+              padding: 8px 16px;
+              cursor: pointer;
+              box-shadow: 0 2px 8px #0003;
+              position: fixed;
+              top: 20px;
+              left: 20px;
+              z-index: 4000;
+              transition: background 0.2s;
+              animation: blink 1s infinite;
+            }
+
+        /* Play Music Button (match nav button style) */
+        #playMusicBtn {
+          background: #ff4444;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          font-size: 14px;
+          font-family: "TamaConnectType", sans-serif;
+          padding: 8px 16px;
+          cursor: pointer;
+          box-shadow: 0 2px 8px #0003;
+          position: fixed;
+          top: 20px;
+          left: 20px;
+          z-index: 4000;
+          transition: background 0.2s;
+        }
+        #playMusicBtn:hover {
+          background: #ff6666;
+        }
     @font-face {
       font-family: 'TamaConnectType';
-      src: url('tamaconnecttype.woff2') format('woff2'),
-           url('tamaconnecttype.woff') format('woff');
+      src: url('tamaconnecttype.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'TamaConnectType';
+      src: url('tamaconnecttype.woff') format('woff');
       font-weight: normal;
       font-style: normal;
       font-display: swap;
@@ -20,9 +78,9 @@
       left: 170px;
       bottom: 400px;
       transform: translateX(-50%);
-      font-size: 28px;
+      font-size: 38px;
       color: #0eff42;
-      opacity: 0.8;
+      opacity: 0.9;
       animation: bounce 1s infinite ease-in-out;
       z-index: 9999;
       pointer-events: none;
@@ -262,6 +320,8 @@
   </style>
 </head>
 <body>
+  <!-- Play Music Button -->
+  <button id="playMusicBtn" style="position:fixed;top:20px;left:20px;z-index:4000;padding:10px 18px;background:#0eff42;color:#222;border:none;border-radius:8px;font-size:16px;cursor:pointer;box-shadow:0 2px 8px #0003;">Play Music</button>
 
   <!-- Sidebar with player images -->
   <div id="sidebar">
@@ -365,9 +425,61 @@
   </div>
 
   <!-- Glamorous audio player -->
-  <audio id="bgm" src="glamorous.mp3" controls loop style="position:fixed;bottom:20px;right:20px;z-index:3000;"></audio>
+  <audio id="bgm" src="glamorous.mp3" loop style="display:none;"></audio>
 
 <script>
+      // Auto-scroll player list on load, stop on user interaction
+      const playerList = document.getElementById("playerList");
+      let autoScrollInterval = setInterval(() => {
+        playerList.scrollTop += 1.2;
+        if (playerList.scrollTop + playerList.clientHeight >= playerList.scrollHeight - 2) {
+          playerList.scrollTop = 0;
+        }
+      }, 16);
+      ["wheel", "touchstart", "mousedown", "keydown"].forEach(evt => {
+        playerList.addEventListener(evt, () => {
+          clearInterval(autoScrollInterval);
+        }, { once: true });
+      });
+    // Duplicate player list for seamless infinite scroll (CSS animation)
+    (function duplicatePlayerList() {
+      const playerList = document.getElementById('playerList');
+      if (playerList) {
+        playerList.innerHTML += playerList.innerHTML;
+      }
+    })();
+
+    // Get the offsetTop of the first duplicate for robust seamless scroll
+    let resetPoint = 0;
+    window.addEventListener('DOMContentLoaded', () => {
+      const playerList = document.getElementById('playerList');
+      if (playerList && playerList.children.length > 0) {
+        // Find the first duplicate
+        const originalCount = playerList.children.length / 2;
+        if (playerList.children[originalCount]) {
+          resetPoint = playerList.children[originalCount].offsetTop;
+        }
+      }
+    });
+  // Animate player list scroll until user interacts
+  // Remove JS auto-scroll logic (CSS handles it now)
+      // Prevent page scrolling when interacting with the game canvas (for iPhone/mobile)
+      const gameCanvas = document.getElementById('game');
+      if (gameCanvas) {
+        gameCanvas.addEventListener('touchstart', function(e) { e.preventDefault(); }, { passive: false });
+        gameCanvas.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
+        gameCanvas.addEventListener('touchend', function(e) { e.preventDefault(); }, { passive: false });
+      }
+    // Play Music Button logic
+    const playMusicBtn = document.getElementById('playMusicBtn');
+    playMusicBtn.addEventListener('click', () => {
+      const audio = document.getElementById('bgm');
+      audio.play();
+      playMusicBtn.classList.remove('clicked');
+      // Force reflow to restart animation if clicked rapidly
+      void playMusicBtn.offsetWidth;
+      playMusicBtn.classList.add('clicked');
+    });
   // Attempt to auto-scroll the player list to trigger scroll event (may not count as user gesture in all browsers)
   window.addEventListener('DOMContentLoaded', () => {
     const playerList = document.getElementById('playerList');
@@ -378,14 +490,20 @@
  
   
   
-  const playerList = document.getElementById("playerList");
   const scrollArrow = document.getElementById("scrollArrow");
 
+  // Make player list scroll continuously in a loop
   playerList.addEventListener("scroll", () => {
     const atBottom =
       playerList.scrollTop + playerList.clientHeight >= playerList.scrollHeight - 5;
-
     scrollArrow.style.display = atBottom ? "none" : "block";
+
+    // Loop scroll: if at bottom, jump to top; if at top, jump to bottom
+    if (playerList.scrollTop + playerList.clientHeight >= playerList.scrollHeight - 2) {
+      playerList.scrollTop = 1;
+    } else if (playerList.scrollTop === 0) {
+      playerList.scrollTop = playerList.scrollHeight - playerList.clientHeight - 2;
+    }
   });
 
   const canvas = document.getElementById("game");
