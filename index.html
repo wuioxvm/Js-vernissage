@@ -477,14 +477,6 @@
       font-size:12px;
       opacity:0.8;
     }
-  </style>
-</head>
-<body>
-  <!-- Play Music Button (moved for mobile by CSS) -->
-  <div id="playMusicBtnWrap">
-    <button id="playMusicBtn" style="position:fixed;top:20px;left:20px;z-index:4000;padding:10px 18px;background:#0eff42;color:#222;border:none;border-radius:8px;font-size:16px;cursor:pointer;box-shadow:0 2px 8px #0003;">Play Music</button>
-  </div>
-    /* iPhone-specific: move nav bar to right side, keep horizontal; move Play Music below scroll arrow */
     @media (max-width: 600px) {
       #sidebar {
         flex-direction: column;
@@ -542,6 +534,15 @@
         width: 100vw;
       }
     }
+  </style>
+</head>
+<body>
+  <!-- Play Music Button (moved for mobile by CSS) -->
+  <div id="playMusicBtnWrap">
+    <button id="playMusicBtn" style="position:fixed;top:20px;left:20px;z-index:4000;padding:10px 18px;background:#0eff42;color:#222;border:none;border-radius:8px;font-size:16px;cursor:pointer;box-shadow:0 2px 8px #0003;">Play Music</button>
+  </div>
+
+
 
   <!-- Sidebar with player images -->
   <div id="sidebar">
