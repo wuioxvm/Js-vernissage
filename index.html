@@ -6,6 +6,93 @@
   <link rel="image_src" href="Background.png" />
   <meta name="Instagram:image" property="og:image" content="Background.png" />
   <style>
+        /* Responsive styles for mobile devices */
+        @media (max-width: 600px) {
+          body {
+            flex-direction: column;
+            overflow: auto;
+          }
+          #sidebar {
+            position: static;
+            width: 100vw;
+            top: 0;
+            left: 0;
+            height: auto;
+            flex-direction: row;
+            align-items: flex-start;
+            padding: 10px 0 0 0;
+            z-index: 1000;
+            background: rgba(0,0,0,0.7);
+            box-sizing: border-box;
+            overflow-x: auto;
+            overflow-y: visible;
+          }
+          #playerList {
+            flex-direction: row;
+            gap: 20px;
+            max-height: 90px;
+            max-width: 100vw;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-left: 0;
+          }
+          #scrollArrow {
+            left: 50%;
+            bottom: 10px;
+            font-size: 28px;
+            z-index: 9999;
+          }
+          #main {
+            margin-left: 0;
+            width: 100vw;
+          }
+          nav {
+            position: static;
+            width: 100vw;
+            left: 0;
+            right: 0;
+            top: 0;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-start;
+            padding: 10px 5px;
+            font-size: 14px;
+          }
+          nav button, #playMusicBtn {
+            font-size: 13px;
+            padding: 7px 10px;
+            margin-bottom: 4px;
+          }
+          #playMusicBtn {
+            position: static !important;
+            margin: 10px 0 0 10px;
+            left: auto;
+            top: auto;
+            z-index: 4000;
+            width: auto;
+            min-width: 110px;
+          }
+          #gameWrap {
+            padding-top: 10px;
+          }
+          #popup, #uploadPopup {
+            width: 98vw;
+            max-width: 98vw;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px;
+          }
+          #rsvpBtn {
+            position: static !important;
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 300px;
+            left: auto;
+            top: auto;
+            z-index: 4000;
+          }
+        }
     /* Click animation for Play Music button */
     @-webkit-keyframes clickPop {
       0% { -webkit-transform: scale(1); transform: scale(1); }
