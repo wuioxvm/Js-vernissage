@@ -6,59 +6,53 @@
   <link rel="image_src" href="Background.png" />
   <meta name="Instagram:image" property="og:image" content="Background.png" />
   <style>
-                /* Click animation for Play Music button */
-                @keyframes clickPop {
-                  0% { transform: scale(1); }
-                  30% { transform: scale(1.15); }
-                  60% { transform: scale(0.95); }
-                  100% { transform: scale(1); }
-                }
-                #playMusicBtn.clicked {
-                  animation: clickPop 0.35s cubic-bezier(.68,-0.55,.27,1.55);
-                }
-            /* Blinking animation for Play Music button */
-            @keyframes blink {
-              0%, 100% { opacity: 1; }
-              50% { opacity: 0.3; }
-            }
-            #playMusicBtn {
-              background: #ff4444;
-              color: white;
-              border: none;
-              border-radius: 6px;
-              font-size: 14px;
-              font-family: "TamaConnectType", sans-serif;
-              padding: 8px 16px;
-              cursor: pointer;
-              box-shadow: 0 2px 8px #0003;
-              position: fixed;
-              top: 20px;
-              left: 20px;
-              z-index: 4000;
-              transition: background 0.2s;
-              animation: blink 1s infinite;
-            }
-
-        /* Play Music Button (match nav button style) */
-        #playMusicBtn {
-          background: #ff4444;
-          color: white;
-          border: none;
-          border-radius: 6px;
-          font-size: 14px;
-          font-family: "TamaConnectType", sans-serif;
-          padding: 8px 16px;
-          cursor: pointer;
-          box-shadow: 0 2px 8px #0003;
-          position: fixed;
-          top: 20px;
-          left: 20px;
-          z-index: 4000;
-          transition: background 0.2s;
-        }
-        #playMusicBtn:hover {
-          background: #ff6666;
-        }
+    /* Click animation for Play Music button */
+    @-webkit-keyframes clickPop {
+      0% { -webkit-transform: scale(1); transform: scale(1); }
+      30% { -webkit-transform: scale(1.15); transform: scale(1.15); }
+      60% { -webkit-transform: scale(0.95); transform: scale(0.95); }
+      100% { -webkit-transform: scale(1); transform: scale(1); }
+    }
+    @keyframes clickPop {
+      0% { -webkit-transform: scale(1); transform: scale(1); }
+      30% { -webkit-transform: scale(1.15); transform: scale(1.15); }
+      60% { -webkit-transform: scale(0.95); transform: scale(0.95); }
+      100% { -webkit-transform: scale(1); transform: scale(1); }
+    }
+    #playMusicBtn.clicked {
+      -webkit-animation: clickPop 0.35s cubic-bezier(.68,-0.55,.27,1.55);
+      animation: clickPop 0.35s cubic-bezier(.68,-0.55,.27,1.55);
+    }
+    /* Blinking animation for Play Music button */
+    @-webkit-keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    #playMusicBtn {
+      background: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: "TamaConnectType", sans-serif;
+      padding: 8px 16px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #0003;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 4000;
+      transition: background 0.2s;
+      -webkit-animation: blink 1s infinite;
+      animation: blink 1s infinite;
+    }
+    #playMusicBtn:hover {
+      background: #ff6666;
+    }
     @font-face {
       font-family: 'TamaConnectType';
       src: url('tamaconnecttype.woff2') format('woff2');
@@ -77,17 +71,23 @@
       position: fixed;
       left: 170px;
       bottom: 400px;
+      -webkit-transform: translateX(-50%);
       transform: translateX(-50%);
       font-size: 38px;
       color: #0eff42;
       opacity: 0.9;
+      -webkit-animation: bounce 1s infinite ease-in-out;
       animation: bounce 1s infinite ease-in-out;
       z-index: 9999;
       pointer-events: none;
     }
+    @-webkit-keyframes bounce {
+      0%, 100% { -webkit-transform: translateY(0); transform: translateY(0); }
+      50% { -webkit-transform: translateY(6px); transform: translateY(6px); }
+    }
     @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(6px); }
+      0%, 100% { -webkit-transform: translateY(0); transform: translateY(0); }
+      50% { -webkit-transform: translateY(6px); transform: translateY(6px); }
     }
     body {
       background: url("Background.png") no-repeat center center fixed;
