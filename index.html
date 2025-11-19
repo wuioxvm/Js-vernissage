@@ -6,6 +6,19 @@
   <link rel="image_src" href="Background.png" />
   <meta name="Instagram:image" property="og:image" content="Background.png" />
   <style>
+                        /* Ensure scroll arrow animation works on iPhone */
+                        @-webkit-keyframes bounce {
+                          0%, 100% { -webkit-transform: translateY(0); transform: translateY(0); }
+                          50% { -webkit-transform: translateY(6px); transform: translateY(6px); }
+                        }
+                        @keyframes bounce {
+                          0%, 100% { -webkit-transform: translateY(0); transform: translateY(0); }
+                          50% { -webkit-transform: translateY(6px); transform: translateY(6px); }
+                        }
+                        #scrollArrow {
+                          -webkit-animation: bounce 1s infinite ease-in-out;
+                          animation: bounce 1s infinite ease-in-out;
+                        }
                     /* iPhone-specific: compact nav bar and closer to Play Music button */
                     @media (max-width: 600px) {
                       nav {
@@ -154,7 +167,7 @@
             z-index: 4000;
           }
         }
-    /* Click animation for Play Music button */
+    /* Play Music button animation */
     @-webkit-keyframes clickPop {
       0% { -webkit-transform: scale(1); transform: scale(1); }
       30% { -webkit-transform: scale(1.15); transform: scale(1.15); }
@@ -167,11 +180,6 @@
       60% { -webkit-transform: scale(0.95); transform: scale(0.95); }
       100% { -webkit-transform: scale(1); transform: scale(1); }
     }
-    #playMusicBtn.clicked {
-      -webkit-animation: clickPop 0.35s cubic-bezier(.68,-0.55,.27,1.55);
-      animation: clickPop 0.35s cubic-bezier(.68,-0.55,.27,1.55);
-    }
-    /* Blinking animation for Play Music button */
     @-webkit-keyframes blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
@@ -179,6 +187,10 @@
     @keyframes blink {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
+    }
+    #playMusicBtn.clicked {
+      -webkit-animation: clickPop 0.35s cubic-bezier(.68,-0.55,.27,1.55);
+      animation: clickPop 0.35s cubic-bezier(.68,-0.55,.27,1.55);
     }
     #playMusicBtn {
       background: #ff4444;
@@ -637,41 +649,48 @@
   <audio id="bgm" src="glamorous.mp3" loop style="display:none;"></audio>
 
 <script>
-      // Auto-scroll player list on load, stop on user interaction
-      const playerList = document.getElementById("playerList");
-      let autoScrollInterval = setInterval(() => {
-        playerList.scrollTop += 1.2;
-        if (playerList.scrollTop + playerList.clientHeight >= playerList.scrollHeight - 2) {
-          playerList.scrollTop = 0;
+      // Duplicate player list for seamless infinite scroll
+      (function duplicatePlayerList() {
+        const playerList = document.getElementById('playerList');
+        if (playerList) {
+          playerList.innerHTML += playerList.innerHTML;
         }
-      }, 16);
-      ["wheel", "touchstart", "mousedown", "keydown"].forEach(evt => {
-        playerList.addEventListener(evt, () => {
-          clearInterval(autoScrollInterval);
-        }, { once: true });
-      });
-    // Duplicate player list for seamless infinite scroll (CSS animation)
-    (function duplicatePlayerList() {
-      const playerList = document.getElementById('playerList');
-      if (playerList) {
-        playerList.innerHTML += playerList.innerHTML;
-      }
-    })();
+      })();
 
-    // Get the offsetTop of the first duplicate for robust seamless scroll
-    let resetPoint = 0;
-    window.addEventListener('DOMContentLoaded', () => {
-      const playerList = document.getElementById('playerList');
-      if (playerList && playerList.children.length > 0) {
-        // Find the first duplicate
-        const originalCount = playerList.children.length / 2;
-        if (playerList.children[originalCount]) {
-          resetPoint = playerList.children[originalCount].offsetTop;
+      // Improved auto-scroll for player list (iPhone compatible)
+      window.addEventListener('DOMContentLoaded', () => {
+        const playerList = document.getElementById('playerList');
+        if (!playerList) return;
+
+        // Find the first duplicate for seamless looping
+        let resetPoint = 0;
+        if (playerList.children.length > 0) {
+          const originalCount = playerList.children.length / 2;
+          if (playerList.children[originalCount]) {
+            resetPoint = playerList.children[originalCount].offsetTop;
+          }
         }
-      }
-    });
-  // Animate player list scroll until user interacts
-  // Remove JS auto-scroll logic (CSS handles it now)
+
+        let autoScrollActive = true;
+        let autoScrollInterval = setInterval(() => {
+          if (!autoScrollActive) return;
+          playerList.scrollTop += 1.2;
+          // Loop seamlessly
+          if (resetPoint && playerList.scrollTop >= resetPoint) {
+            playerList.scrollTop = 0;
+          }
+        }, 16);
+
+        // Only stop auto-scroll on actual scroll/touchmove (not just touchstart)
+        const stopAutoScroll = () => {
+          autoScrollActive = false;
+          clearInterval(autoScrollInterval);
+        };
+        playerList.addEventListener('wheel', stopAutoScroll, { once: true });
+        playerList.addEventListener('touchmove', stopAutoScroll, { once: true });
+        playerList.addEventListener('mousedown', stopAutoScroll, { once: true });
+        playerList.addEventListener('keydown', stopAutoScroll, { once: true });
+      });
       // Prevent page scrolling when interacting with the game canvas (for iPhone/mobile)
       const gameCanvas = document.getElementById('game');
       if (gameCanvas) {
